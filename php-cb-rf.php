@@ -25,9 +25,15 @@ class PHP_CB_RF {
 	 * @return array
 	 */
 	function get( ...$char_codes ) {
-		$data  = $this->_get_cache();
+		$data = $this->_get_cache();
+
+		if ( empty( $data ) ) {
+			return array();
+		}
+
 		$array = array();
 		foreach ( $char_codes as $code ) {
+			// TODO: Тут добавлять остальные данные отсюда https://www.cbr-xml-daily.ru/daily_json.js
 			$array[] = array(
 				'charCode'   => $code,
 				'actual'     => $data->Valute->{$code}->Value,
@@ -63,6 +69,10 @@ class PHP_CB_RF {
 	 * @return mixed
 	 */
 	private function _get_cache() {
+		if ( ! file_exists( $this->cache_path ) ) {
+			file_put_contents( $this->cache_path, serialize( array() ) );
+		}
+
 		return unserialize( file_get_contents( $this->cache_path ) );
 	}
 
